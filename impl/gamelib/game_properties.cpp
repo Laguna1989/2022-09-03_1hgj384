@@ -3,17 +3,17 @@
 jt::Palette GP::getPalette()
 {
     static auto const p = jt::Palette::parseGPL(R"(GIMP Palette
-#Palette Name: Dreamscape8
-#Description: A palette made of low saturation colours to give your art a dreamlike quality. 
+#Palette Name: Juiciful-8
+#Description: A nice palette i made up some times ago, it's colors reminds me of some tasty fruits :)
 #Colors: 8
-201	204	161	c9cca1
-202	160	90	caa05a
-174	106	71	ae6a47
-139	64	73	8b4049
-84	51	68	543344
-81	82	98	515262
-99	120	125	63787d
-142	160	145	8ea091
+255	247	244	fff7f4
+255	198	198	ffc6c6
+255	130	130	ff8282
+255	47	78	ff2f4e
+198	10	95	c60a5f
+130	10	95	820a5f
+66	10	66	420a42
+2	2	2	020202
 )");
     return p;
 }
