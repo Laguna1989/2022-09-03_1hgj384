@@ -9,9 +9,12 @@ public:
     Platform(std::shared_ptr<jt::Box2DWorldInterface> world, b2BodyDef const* def,
         jt::Vector2f const& pos, jt::Vector2f const& size);
 
+    float m_speedScale = 1.0f;
+
+    float m_flashTimer { 1.0f };
+
 private:
     std::shared_ptr<jt::Shape> m_shape;
-
     jt::Vector2f m_size;
 
     void doCreate() override;

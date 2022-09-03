@@ -1,5 +1,6 @@
 #include "player.hpp"
 #include <game_interface.hpp>
+#include <game_properties.hpp>
 
 Player::Player(std::shared_ptr<jt::Box2DWorldInterface> world, b2BodyDef const* def)
     : Box2DObject(world, def)
@@ -18,6 +19,7 @@ void Player::doCreate()
     m_shape = std::make_shared<jt::Shape>();
     m_shape->makeRect(jt::Vector2f { 16, 48 }, textureManager());
     m_shape->setOffset(jt::OffsetMode::CENTER);
+    m_shape->setColor(GP::getPalette().getColor(0));
 }
 
 void Player::doUpdate(float const elapsed)
@@ -30,11 +32,15 @@ void Player::doUpdate(float const elapsed)
     }
 
     m_jumpTimer -= elapsed;
+    if (getPosition().y >= 315) {
+        m_jumpTimer = 0.0f;
+    }
 
     if (m_jumpTimer <= 0) {
-        if (input.keyboard()->justPressed(jt::KeyCode::W)) {
+        if (input.keyboard()->justPressed(jt::KeyCode::W)
+            || input.keyboard()->justPressed(jt::KeyCode::Space)) {
             setVelocity(jt::Vector2f { 0.0f, -300.0f });
-            m_jumpTimer = 3.5f;
+            m_jumpTimer = 3.0f;
         }
     }
 

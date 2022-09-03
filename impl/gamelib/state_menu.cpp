@@ -78,8 +78,10 @@ void StateMenu::createTextCredits()
 void StateMenu::createTextExplanation()
 {
     float half_width = GP::GetScreenSize().x / 2;
-    m_text_Explanation = jt::dh::createText(
-        renderTarget(), "Press Space to start the game", 16U, GP::PaletteFontFront());
+    m_text_Explanation = jt::dh::createText(renderTarget(),
+        "Press Space to start the game\nReach the right side of the screen\n[D] to run forward, "
+        "[W, Space] to jump",
+        16U, GP::PaletteFontFront());
     m_text_Explanation->setPosition({ half_width, 150 });
     m_text_Explanation->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 3, 3 });
 }

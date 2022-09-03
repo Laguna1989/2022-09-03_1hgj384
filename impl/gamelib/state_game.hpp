@@ -32,7 +32,7 @@ private:
     std::shared_ptr<Player> m_player { nullptr };
 
     std::shared_ptr<jt::ObjectGroup<Platform>> m_platforms { nullptr };
-    std::shared_ptr<jt::Timer> m_baseTimerForBlockSpawns { nullptr };
+    std::shared_ptr<jt::Timer> m_baseTimerForBlockSpawns1 { nullptr };
 
     std::shared_ptr<WindParticles> m_wind { nullptr };
 
@@ -41,6 +41,9 @@ private:
 
     int m_scoreP1 { 0 };
     int m_scoreP2 { 0 };
+
+    float m_lastPlayerY = 5000;
+    float m_lastPlayerX = 5000;
 
     void doInternalCreate() override;
     void doInternalUpdate(float const elapsed) override;
