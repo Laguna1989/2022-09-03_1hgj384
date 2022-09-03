@@ -11,6 +11,7 @@ public:
 private:
     std::shared_ptr<jt::Shape> m_shape;
 
+    float m_jumpTimer = 0.1f;
     void doCreate() override;
     void doUpdate(float const elapsed) override;
     void doDraw() const override;

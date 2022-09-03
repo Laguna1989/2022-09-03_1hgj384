@@ -24,10 +24,17 @@ void Player::doUpdate(float const elapsed)
 {
 
     auto& input = getGame()->input();
-    if (input.keyboard()->pressed(jt::KeyCode::D)) {
+    if (input.keyboard()->justPressed(jt::KeyCode::D)) {
         getB2Body()->ApplyForceToCenter(b2Vec2 { 100.0f, 0.0f }, true);
-    } else if (input.keyboard()->pressed(jt::KeyCode::A)) {
-        getB2Body()->ApplyForceToCenter(b2Vec2 { -100.0f, 0.0f }, true);
+    }
+
+    m_jumpTimer -= elapsed;
+
+    if (m_jumpTimer <= 0) {
+        if (input.keyboard()->justPressed(jt::KeyCode::W)) {
+            setVelocity(jt::Vector2f { 0.0f, -300.0f });
+            m_jumpTimer = 3.5f;
+        }
     }
 
     m_shape->setPosition(getPosition());
