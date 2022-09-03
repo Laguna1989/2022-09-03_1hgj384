@@ -1,9 +1,11 @@
 ﻿#include "state_game.hpp"
+#include "timer.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
 #include <color/color.hpp>
 #include <game_interface.hpp>
 #include <game_properties.hpp>
 #include <hud/hud.hpp>
+#include <random/random.hpp>
 #include <screeneffects/vignette.hpp>
 #include <shape.hpp>
 #include <sprite.hpp>
@@ -26,16 +28,21 @@ void StateGame::doInternalCreate()
     m_background->setIgnoreCamMovement(true);
     m_background->update(0.0f);
 
+    m_wind = std::make_shared<WindParticles>();
+    add(m_wind);
+
     m_platforms = std::make_shared<jt::ObjectGroup<Platform>>();
     add(m_platforms);
 
-    b2BodyDef def;
-    def.type = b2BodyType::b2_kinematicBody;
-    auto p = std::make_shared<Platform>(m_world, &def,
-        jt::Vector2f { 300.0f, GP::GetScreenSize().y - 50.0f },
-        jt::Vector2f { GP::GetScreenSize().x, 20 });
-    add(p);
-    m_platforms->push_back(p);
+    spawnPlatform(jt::Vector2f { 300.0f, GP::GetScreenSize().y - 50.0f },
+        jt::Vector2f { GP::GetScreenSize().x, 20.0f });
+
+    m_baseTimerForBlockSpawns = std::make_shared<jt::Timer>(5.0f, [this]() {
+        spawnPlatform(
+            { GP::GetScreenSize().x + 32, jt::Random::getFloat(20, GP::GetScreenSize().y - 40.0f) },
+            { 32, 32 });
+    });
+    add(m_baseTimerForBlockSpawns);
 
     createPlayer();
 
@@ -46,6 +53,19 @@ void StateGame::doInternalCreate()
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
+}
+
+void StateGame::spawnPlatform(jt::Vector2f const& pos, jt::Vector2f const& size)
+{
+    b2BodyDef def;
+    def.type = b2_kinematicBody;
+    auto p = std::make_shared<Platform>(m_world, &def, pos, size);
+
+    if (m_platforms->size() != 0) {
+        p->setVelocity({ -50, 0.0f });
+    }
+    add(p);
+    m_platforms->push_back(p);
 }
 
 void StateGame::createPlayer()
@@ -61,14 +81,17 @@ void StateGame::doInternalUpdate(float const elapsed)
 {
     if (m_running) {
         m_world->step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
-        // update game logic here
-        if (getGame()->input().keyboard()->justPressed(jt::KeyCode::A)) {
-            m_scoreP1++;
-            m_hud->getObserverScoreP1()->notify(m_scoreP1);
+
+        auto const speed = m_player->getPosition().x / GP::GetScreenSize().x * 100.0f;
+        m_hud->getObserverScoreP1()->notify(static_cast<int>(speed));
+
+        m_wind->m_windSpeed = 0.1f + speed / 100.0f * 4.0f;
+
+        if (speed > 100) {
+            endGame(true);
         }
-        if (getGame()->input().keyboard()->justPressed(jt::KeyCode::D)) {
-            m_scoreP2++;
-            m_hud->getObserverScoreP2()->notify(m_scoreP2);
+        if (speed < -1) {
+            endGame(false);
         }
     }
 
@@ -84,7 +107,7 @@ void StateGame::doInternalDraw() const
     m_hud->draw();
 }
 
-void StateGame::endGame()
+void StateGame::endGame(bool win)
 {
     if (m_hasEnded) {
         // trigger this function only once

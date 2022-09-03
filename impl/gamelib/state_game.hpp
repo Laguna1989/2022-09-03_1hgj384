@@ -4,6 +4,8 @@
 #include "object_group.hpp"
 #include "platform.hpp"
 #include "player.hpp"
+#include "timer.hpp"
+#include "wind_particles.hpp"
 #include <box2dwrapper/box2d_world_interface.hpp>
 #include <game_state.hpp>
 #include <memory>
@@ -29,7 +31,10 @@ private:
     std::shared_ptr<jt::Box2DWorldInterface> m_world { nullptr };
     std::shared_ptr<Player> m_player { nullptr };
 
-    std::shared_ptr<jt::ObjectGroup<Platform>> m_platforms;
+    std::shared_ptr<jt::ObjectGroup<Platform>> m_platforms { nullptr };
+    std::shared_ptr<jt::Timer> m_baseTimerForBlockSpawns { nullptr };
+
+    std::shared_ptr<WindParticles> m_wind { nullptr };
 
     bool m_running { true };
     bool m_hasEnded { false };
@@ -41,8 +46,9 @@ private:
     void doInternalUpdate(float const elapsed) override;
     void doInternalDraw() const override;
 
-    void endGame();
+    void endGame(bool win);
     void createPlayer();
+    void spawnPlatform(jt::Vector2f const& pos, jt::Vector2f const& size);
 };
 
 #endif

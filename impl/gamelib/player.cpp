@@ -22,10 +22,11 @@ void Player::doCreate()
 
 void Player::doUpdate(float const elapsed)
 {
-
     auto& input = getGame()->input();
-    if (input.keyboard()->justPressed(jt::KeyCode::D)) {
-        getB2Body()->ApplyForceToCenter(b2Vec2 { 100.0f, 0.0f }, true);
+    if (input.keyboard()->pressed(jt::KeyCode::D)) {
+        getB2Body()->ApplyForceToCenter(b2Vec2 { 150.0f, 0.0f }, true);
+    } else if (input.keyboard()->pressed(jt::KeyCode::A)) {
+        getB2Body()->ApplyForceToCenter(b2Vec2 { -150.0f, 0.0f }, true);
     }
 
     m_jumpTimer -= elapsed;
@@ -39,6 +40,10 @@ void Player::doUpdate(float const elapsed)
 
     m_shape->setPosition(getPosition());
     m_shape->update(elapsed);
+
+    auto v = getVelocity();
+    v.x *= 0.99f;
+    setVelocity(v);
 }
 
 void Player::doDraw() const { m_shape->draw(renderTarget()); }
