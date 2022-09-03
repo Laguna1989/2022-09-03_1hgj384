@@ -12,7 +12,7 @@
 
 void StateGame::doInternalCreate()
 {
-    m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 0.0f });
+    m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 100.0f });
 
     float const w = static_cast<float>(GP::GetWindowSize().x);
     float const h = static_cast<float>(GP::GetWindowSize().y);
@@ -25,6 +25,16 @@ void StateGame::doInternalCreate()
     m_background->setColor(GP::PaletteBackground());
     m_background->setIgnoreCamMovement(true);
     m_background->update(0.0f);
+
+    m_platforms = std::make_shared<jt::ObjectGroup<Platform>>();
+    add(m_platforms);
+
+    b2BodyDef def;
+    def.type = b2BodyType::b2_staticBody;
+    auto p = std::make_shared<Platform>(
+        m_world, &def, jt::Vector2f { 300.0f, 200.0f }, jt::Vector2f { GP::GetScreenSize().x, 20 });
+    add(p);
+    m_platforms->push_back(p);
 
     createPlayer();
 
@@ -41,7 +51,7 @@ void StateGame::createPlayer()
 {
     b2BodyDef def;
     def.type = b2BodyType::b2_dynamicBody;
-    m_player = std::make_shared<Player>(m_world, &def, *this);
+    m_player = std::make_shared<Player>(m_world, &def);
     add(m_player);
 }
 
